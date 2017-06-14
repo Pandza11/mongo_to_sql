@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import uuid
 
 from django.db import models
 from django.utils.timezone import datetime
@@ -32,7 +33,7 @@ class Account(models.Model):
     password = models.CharField(max_length=1024, blank=False)
     createdAt = models.DateField(null=True, blank=True, default=None)
     name = models.CharField(max_length=1024)
-    key = models.CharField(max_length=1024, default='uuid')# What to do with UUID?
+    key = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date = models.DateField(max_length=1024, default=datetime.today)
     defaultTTL = models.IntegerField(max_length=1024)
     googleId = models.CharField(max_length=1024)
