@@ -7,31 +7,12 @@ from django.utils.timezone import datetime
 # Create your models here.
 
 
-class Subscription(models.Model):
-    """
-    Represents a subscription by a User.
-    """
-    plan = models.CharField(max_length=1024, blank=False)
-    last_payment = models.DateField(default=datetime.today)
-    created_at = models.DateField(default=datetime.today)
-    paypal_agreement_id = models.CharField(max_length=1024, blank=False)
-    is_suspended = models.BooleanField(default=False)
-    hosts = models.CharField(max_length=1024)
-    member_limit = models.IntegerField(default=1)
-    period = models.CharField(max_length=1024, default="monthly")
-    coupon_iD = models.CharField(max_length=1024)
-
-    def __str__(self):
-        return self.couponID
-
-
 class Account(models.Model):
     """
     Represents a registered User.
     """
     # what to do with index: { unique: true } in email?
     email = models.EmailField(max_length=254, blank=False)
-    password = models.CharField(max_length=1024, blank=False)
     created_at = models.DateField(default=datetime.today)
     name = models.CharField(max_length=1024)
     # what to do with index: { unique: true } in key?
@@ -48,7 +29,6 @@ class Account(models.Model):
     twitter_profile_id = models.CharField(max_length=1024)
     twitter_profile_username = models.CharField(max_length=1024)
     twitter_profile_displayname = models.CharField(max_length=1024)
-    subscriptions = models.ForeignKey(Subscription)
     referral = models.CharField(max_length=1024)
     ref_src = models.CharField(max_length=1024)
     first_seen = models.DateField()
@@ -62,3 +42,22 @@ class Account(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Subscription(models.Model):
+    """
+    Represents a subscription by a User.
+    """
+    plan = models.CharField(max_length=1024, blank=False)
+    last_payment = models.DateField(default=datetime.today)
+    created_at = models.DateField(default=datetime.today)
+    paypal_agreement_id = models.CharField(max_length=1024, blank=False)
+    is_suspended = models.BooleanField(default=False)
+    hosts = models.CharField(max_length=1024)
+    member_limit = models.IntegerField(default=1)
+    period = models.CharField(max_length=1024, default="monthly")
+    coupon_id = models.CharField(max_length=1024)
+    account = models.ForeignKey(Account, default=None)
+
+    def __str__(self):
+        return self.coupon_id
