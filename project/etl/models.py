@@ -12,12 +12,12 @@ class Subscription(models.Model):
     Represents a subscription.
     """
     plan = models.CharField(max_length=1024, blank=False)
-    lastPayment = models.DateField(max_length=1024, default=datetime.today)
-    createdAt = models.DateField(max_length=1024, default=datetime.today)
+    lastPayment = models.DateField(default=datetime.today)
+    createdAt = models.DateField(default=datetime.today)
     paypalAgreementId = models.CharField(max_length=1024, blank=False)
     isSuspended = models.BooleanField(default=False)
     hosts = models.CharField(max_length=1024)
-    memberLimit = models.IntegerField(max_length=1024, default=1)
+    memberLimit = models.IntegerField(default=1)
     period = models.CharField(max_length=1024, default="monthly")
     couponID = models.CharField(max_length=1024)
 
@@ -29,16 +29,16 @@ class Account(models.Model):
     """
     Represents a registered user.
     """
+    # what to do with index: { unique: true } in email?
     email = models.EmailField(max_length=254, blank=False)
     password = models.CharField(max_length=1024, blank=False)
-    createdAt = models.DateField(null=True, blank=True, default=None)
+    createdAt = models.DateField(default=datetime.today)
     name = models.CharField(max_length=1024)
+    # what to do with index: { unique: true } in key?
     key = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date = models.DateField(max_length=1024, default=datetime.today)
-    defaultTTL = models.IntegerField(max_length=1024)
-    googleId = models.CharField(max_length=1024)
-    facebookId = models.CharField(max_length=1024)
-    twitterId = models.CharField(max_length=1024)
+    # What should the default be?
+    defaultTTL = models.IntegerField(default=None)
     googleProfile_id = models.CharField(max_length=1024)
     googleProfile_username = models.CharField(max_length=1024)
     googleProfile_displayname = models.CharField(max_length=1024)
@@ -51,14 +51,14 @@ class Account(models.Model):
     subscriptions = models.ForeignKey(Subscription)
     referral = models.CharField(max_length=1024)
     refSrc = models.CharField(max_length=1024)
-    firstSeen = models.DateField(max_length=1024)
+    firstSeen = models.DateField()
     enableClassroom = models.BooleanField(default=False)
     memberOf = models.CharField(max_length=1024)
-    isAffiliate = models.BooleanField(default=False)
-    isAWWAdmin = models.BooleanField(default=False)
+    isAffiliate = models.BooleanField()
+    isAWWAdmin = models.BooleanField()
     accountType = models.CharField(max_length=1024, default='fun')
-    enableNewsletter = models.BooleanField(default=False)
-    lastLoginAt = models.DateField(max_length=1024)
+    enableNewsletter = models.BooleanField()
+    lastLoginAt = models.DateField(default=datetime.date(2017, 1, 1))
 
     def __str__(self):
         return self.name
