@@ -35,6 +35,7 @@ class Account(models.Model):
     account_type = models.CharField(max_length=1024, default='fun')
     enable_newsletter = models.BooleanField()
     last_login_at = models.DateField(default=None)
+    deleted_at = models.DateField(default=None)
 
     def __str__(self):
         return self.name
@@ -53,6 +54,7 @@ class Subscription(models.Model):
     period = models.CharField(max_length=1024, default="monthly")
     coupon_id = models.CharField(max_length=1024)
     account = models.ForeignKey(Account, default=None)
+    deleted_at = models.DateField(default=None)
 
     def __str__(self):
         return self.coupon_id
