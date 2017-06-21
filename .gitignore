@@ -1,0 +1,6 @@
+*.pyc
+/*.sublime-*
+/etl/.coverage
+/etl/db.sqlite3
+/etl/.env
+__pycache__/
