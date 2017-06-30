@@ -25,7 +25,7 @@ Migrate the database:
 
     python manage.py migrate
 
-Create super user:
+Create superuser:
 
     python manage.py createsuperuser
 
@@ -34,7 +34,3 @@ Run development server:
     python manage.py runserver
 
 Point your browser to http://127.0.0.1:8000/admin and login
-
-Running tests:
-
-    python manage.py test
