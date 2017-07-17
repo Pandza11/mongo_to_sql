@@ -45,16 +45,17 @@ class Subscription(models.Model):
     """
     Represents a subscription by a User.
     """
-    plan = models.CharField(max_length=1024, blank=False)
-    last_payment = models.DateField(default=datetime.today)
-    created_at = models.DateField(default=datetime.today)
-    paypal_agreement_id = models.CharField(max_length=1024, blank=False)
+    plan = models.CharField(max_length=1024, null=True, blank=False)
+    last_payment = models.DateField(default=datetime.today, null=True, blank=False)
+    created_at = models.DateField(default=datetime.today, null=True, blank=False)
+    paypal_agreement_id = models.CharField(max_length=1024, null=True, blank=False)
     is_suspended = models.BooleanField(default=False)
-    member_limit = models.IntegerField(default=1)
+    hosts = models.CharField(max_length=1024, null=True, blank=False)
+    member_limit = models.IntegerField(default=1, null=True, blank=False)
     period = models.CharField(max_length=1024, default="monthly")
-    coupon_id = models.CharField(max_length=1024)
-    account = models.ForeignKey(Account, default=None)
-    deleted_at = models.DateField(default=None)
+    coupon_id = models.CharField(max_length=1024, null=True, blank=False)
+    account = models.ForeignKey(Account, default=None, null=True, blank=False)
+    deleted_at = models.DateField(default=None, null=True, blank=False)
 
     def __str__(self):
         return self.coupon_id
