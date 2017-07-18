@@ -14,36 +14,37 @@ for account in db.accounts.find():
         account["account_type"] = account.pop("accountType")
     if account.get("enableClassroom"):
         account["enable_classroom"] = account.pop("enableClassroom")
-    #account["ref_src"] = account.pop("refSrc")
-    #account["first_seen"] = account.pop("firstSeen")
-    #account["is_affiliate"] = account.pop("isAffiliate")
-    #account["enable_newsletter"] = account.pop("enableNewsletter")
-    #account["last_login_at"] = account.pop("lastLoginAt")
-    #account["deleted_at"] = account.pop("deletedAt")
-    #account["member_of"] = account.pop("memberOf")
-    #account["google_id"] = account.pop("googleId")
-    #account["facebook_id"] = account.pop("facebookId")
-    #account["twitter_id"] = account.pop("twitterId")
+    if account.get("refSrc"):
+        account["ref_src"] = account.pop("refSrc")
+    if account.get("firstSeen"):
+        account["first_seen"] = account.pop("firstSeen")
+    if account.get("isAffiliate"):
+        account["is_affiliate"] = account.pop("isAffiliate")
+    if account.get("deletedAt"):
+        account["deletedAt"] = account.pop("deletedAt")
+    if account.get("memberOf"):
+        account["member_of"] = account.pop("memberOf") # radi
+    if account.get("defaultTTL"):
+        account["default_ttl"] = account.pop("defaultTTL")
+    if account.get("lastLoginAt"):
+        account["last_login_at"] = account.pop("lastLoginAt")
+    if account.get("enableNewsletter"):
+        account["enable_newsletter"] = account.pop("enableNewsletter")
+    if account.get("isAWWAdmin"):
+        account["is_www_admin"] = account.pop("isAWWAdmin")
+    #if account.get("facebookId"):
+    #    account["facebook_id"] = account.pop("facebookId")
     account.pop("isCommboxAdmin", None)
-    account.pop("refSrc", None)
-    account.pop("firstSeen", None)
-    account.pop("isAffiliate", None)
-    account.pop("deletedAt", None)
-    account.pop("memberOf", None)
+    account.pop("googleProfile", None)
     account.pop("googleId", None)
+    account.pop("facebookProfile", None)
     account.pop("facebookId", None)
-    account.pop("twitterId", None)
     account.pop("twitterProfile", None)
+    account.pop("twitterId", None)
     account.pop("subscriptions", None)
     account.pop("_id", None)
     account.pop("__v", None)
-    account.pop("facebookProfile", None)
-    account.pop("googleProfile", None)
-    account.pop("defaultTTL", None)
-    account.pop("lastLoginAt", None)
-    account.pop("enableNewsletter", None)
     account.pop("_id", None)
-    account.pop("key", None)
     accounts_list.append(account)
 
 print(accounts_list[0].keys())
