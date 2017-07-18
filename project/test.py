@@ -1,6 +1,5 @@
 import pymongo
 import sqlite3
-import codecs
 
 def change_keyname(oldkey,newkey):
     """Renames dictionary key"""
@@ -9,14 +8,12 @@ def change_keyname(oldkey,newkey):
 
 def change_keyname_socialnetwork(socialnetwork):
     """Renames dictionary key embedded within a dictionary"""
+    social_list = ["id", "username", "displayName"]
     if account.get(socialnetwork+"Profile"):
-        if account.get(socialnetwork+"Profile").get("id"):
-            account[socialnetwork+"_profile_id"] = account.get(socialnetwork+"Profile").pop("id")
-        if account.get(socialnetwork+"Profile").get("username"):
-            account[socialnetwork+"_profile_username"] = account.get(socialnetwork+"Profile").pop("username")
-        if account.get(socialnetwork+"Profile").get("displayName"):
-            account[socialnetwork+"_profile_displayname"] = account.get(socialnetwork+"Profile").pop("displayName")
-        account.pop(socialnetwork+"Profile", None)       
+        for item in social_list:
+            if account.get(socialnetwork+"Profile").get(item):
+                account[socialnetwork+"_profile_"+item.lower()] = account.get(socialnetwork+"Profile").pop(item)
+    account.pop(socialnetwork+"Profile", None)       
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
@@ -30,10 +27,10 @@ for account in db.accounts.find():
 
 
 for account in db.accounts.find():
-    account.pop("_id", None) # Deleted according to instruction
-    account.pop("__v", None) # Deleted according to instruction
-    account.pop("password", None)  # Deleted according to instruction
-    account.pop("isCommboxAdmin", None) # Deleted here because not important
+    account.pop("_id", None) # Deleted according to instructions
+    account.pop("__v", None) # Deleted according to instructions
+    account.pop("password", None)  # Deleted according to instructions
+    account.pop("isCommboxAdmin", None) # Deleted here because unimportant (appears twice in db)
     account.pop("googleId", None)   # Deleted here because it appears twice in the mongo database
     account.pop("facebookId", None) # Deleted here because it appears twice in the mongo database
     account.pop("twitterId", None)  # Deleted here because it appears twice in the mongo database
@@ -51,14 +48,11 @@ for account in db.accounts.find():
     change_keyname("lastLoginAt","last_login_at")
     change_keyname("isAWWAdmin","is_aww_admin")
     change_keyname("createdAt","created_at")
-
     change_keyname_socialnetwork("google")
     change_keyname_socialnetwork("facebook")
     change_keyname_socialnetwork("twitter")
 
     accounts_list.append(account)
-
-print(accounts_list[1015])
 
 
 for value in accounts_list:
