@@ -48,3 +48,4 @@ for value in subscriptions_list:
 
     conn.commit()
     conn.close()
+

@@ -31,7 +31,7 @@ class Account(models.Model):
     enable_classroom = models.NullBooleanField(default=False, null=True, blank=True)
     member_of = models.CharField(max_length=1024, null=True, blank=True)
     is_affiliate = models.NullBooleanField(null=True, blank=True)
-    is_aww_admin = models.NullBooleanField(null=True, blank=True)
+    isAwwAdmin = models.NullBooleanField(null=True, blank=True)
     account_type = models.CharField(max_length=1024, default='fun', null=True, blank=True)
     enable_newsletter = models.NullBooleanField(null=True, blank=True)
     last_login_at = models.DateField(default=None, null=True, blank=True)

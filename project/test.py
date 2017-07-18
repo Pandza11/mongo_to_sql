@@ -10,30 +10,24 @@ subscriptions_list = []
 for account in db.accounts.find():
     account.pop("password", None)
     account["created_at"] = account.pop("createdAt")
-    try:
+    if account.get("accountType"):
         account["account_type"] = account.pop("accountType")
-    except KeyError:
-        continue
-    #account["account_type"] = account.pop("accountType")
-    #account["enable_classroom"] = account.pop("enableClassroom")
+    if account.get("enableClassroom"):
+        account["enable_classroom"] = account.pop("enableClassroom")
     #account["ref_src"] = account.pop("refSrc")
     #account["first_seen"] = account.pop("firstSeen")
     #account["is_affiliate"] = account.pop("isAffiliate")
-    #account["is_aww_admin"] = account.pop("isAwwAdmin")
     #account["enable_newsletter"] = account.pop("enableNewsletter")
     #account["last_login_at"] = account.pop("lastLoginAt")
     #account["deleted_at"] = account.pop("deletedAt")
-    #account["is_affiliate"] = account.pop("isAffiliate")
     #account["member_of"] = account.pop("memberOf")
     #account["google_id"] = account.pop("googleId")
     #account["facebook_id"] = account.pop("facebookId")
     #account["twitter_id"] = account.pop("twitterId")
-    account.pop("accountType", None)
-    account.pop("enableClassroom", None)
+    account.pop("isCommboxAdmin", None)
     account.pop("refSrc", None)
     account.pop("firstSeen", None)
     account.pop("isAffiliate", None)
-    account.pop("isAwwAdmin", None)
     account.pop("deletedAt", None)
     account.pop("memberOf", None)
     account.pop("googleId", None)
@@ -61,11 +55,9 @@ for value in accounts_list:
     columns = ', '.join(value.keys())
     placeholders = ', '.join('?' * len(value))
 
-    try:
-        sql = 'INSERT INTO etl_account ({}) VALUES ({})'.format(columns, placeholders)
-        cursor.execute(sql, tuple(value.values()))
 
-        conn.commit()
-        conn.close()
-    except:
-        continue
+    sql = 'INSERT INTO etl_account ({}) VALUES ({})'.format(columns, placeholders)
+    cursor.execute(sql, tuple(value.values()))
+
+    conn.commit()
+    conn.close()
