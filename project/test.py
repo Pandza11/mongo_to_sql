@@ -1,5 +1,22 @@
 import pymongo
 import sqlite3
+import codecs
+
+def change_keyname(oldkey,newkey):
+    """Renames dictionary key"""
+    if account.get(oldkey):
+        account[newkey] = account.pop(oldkey)
+
+def change_keyname_socialnetwork(socialnetwork):
+    """Renames dictionary key embedded within a dictionary"""
+    if account.get(socialnetwork+"Profile"):
+        if account.get(socialnetwork+"Profile").get("id"):
+            account[socialnetwork+"_profile_id"] = account.get(socialnetwork+"Profile").pop("id")
+        if account.get(socialnetwork+"Profile").get("username"):
+            account[socialnetwork+"_profile_username"] = account.get(socialnetwork+"Profile").pop("username")
+        if account.get(socialnetwork+"Profile").get("displayName"):
+            account[socialnetwork+"_profile_displayname"] = account.get(socialnetwork+"Profile").pop("displayName")
+        account.pop(socialnetwork+"Profile", None)       
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
@@ -13,83 +30,35 @@ for account in db.accounts.find():
 
 
 for account in db.accounts.find():
-    account.pop("_id", None)
-    account.pop("__v", None)
-    account.pop("password", None)
-    account.pop("isCommboxAdmin", None)
-    account.pop("googleId", None)
-    account.pop("facebookId", None)
-    account.pop("twitterId", None)
-    account.pop("subscriptions", None)
+    account.pop("_id", None) # Deleted according to instruction
+    account.pop("__v", None) # Deleted according to instruction
+    account.pop("password", None)  # Deleted according to instruction
+    account.pop("isCommboxAdmin", None) # Deleted here because not important
+    account.pop("googleId", None)   # Deleted here because it appears twice in the mongo database
+    account.pop("facebookId", None) # Deleted here because it appears twice in the mongo database
+    account.pop("twitterId", None)  # Deleted here because it appears twice in the mongo database
+    account.pop("subscriptions", None) # Requires further work
+    account.pop("enableNewsletter", None) # Function change_keyname doesn't work
 
-    account["created_at"] = account.pop("createdAt")
-    if account.get("googleProfile"):
-        if account.get("googleProfile").get("id"):
-            account["google_profile_id"] = account.get("googleProfile").pop("id")
-        if account.get("googleProfile").get("id"):
-            account["google_profile_username"] = account.get("googleProfile").pop("username")
-        if account.get("googleProfile").get("id"):
-            account["google_profile_displayname"] = account.get("googleProfile").pop("displayName")
-        account.pop("googleProfile", None)
+    change_keyname("accountType","account_type")
+    change_keyname("enableClassroom","enable_classroom")
+    change_keyname("refSrc","ref_src")
+    change_keyname("firstSeen","firstSeen")
+    change_keyname("isAffiliate","is_affiliate")
+    change_keyname("deletedAt","deleted_at")
+    change_keyname("memberOf","member_of")
+    change_keyname("defaultTTL","default_ttl")
+    change_keyname("lastLoginAt","last_login_at")
+    change_keyname("isAWWAdmin","is_aww_admin")
+    change_keyname("createdAt","created_at")
 
-    if account.get("facebookProfile"):
-        if account.get("facebookProfile").get("id"):
-            account["facebook_profile_id"] = account.get("facebookProfile").pop("id")
-        if account.get("facebookProfile").get("id"):
-            account["facebook_profile_username"] = account.get("facebookProfile").pop("username")
-        if account.get("facebookProfile").get("id"):
-            account["facebook_profile_displayname"] = account.get("facebookProfile").pop("displayName")
-        account.pop("facebookProfile", None)
-
-    if account.get("twitterProfile"):
-        if account.get("twitterProfile").get("id"):
-            account["twitter_profile_id"] = account.get("twitterProfile").pop("id")
-        if account.get("twitterProfile").get("id"):
-            account["twitter_profile_username"] = account.get("twitterProfile").pop("username")
-        if account.get("twitterProfile").get("id"):
-            account["twitter_profile_displayname"] = account.get("twitterProfile").pop("displayName")
-        account.pop("twitterProfile", None)
-
-    #def change_name(oldkey,newkey):
-    #    "Renames key of dictionary"
-
-    if account.get("accountType"):
-        account["account_type"] = account.pop("accountType")
-
-    if account.get("enableClassroom"):
-        account["enable_classroom"] = account.pop("enableClassroom")
-
-    if account.get("refSrc"):
-        account["ref_src"] = account.pop("refSrc")
-
-    if account.get("firstSeen"):
-        account["first_seen"] = account.pop("firstSeen")
-
-    if account.get("isAffiliate"):
-        account["is_affiliate"] = account.pop("isAffiliate")
-
-    if account.get("deletedAt"):
-        account["deletedAt"] = account.pop("deletedAt")
-
-    if account.get("memberOf"):
-        account["member_of"] = account.pop("memberOf") # radi
-
-    if account.get("defaultTTL"):
-        account["default_ttl"] = account.pop("defaultTTL")
-
-    if account.get("lastLoginAt"):
-        account["last_login_at"] = account.pop("lastLoginAt")
-
-    if account.get("enableNewsletter"):
-        account["enable_newsletter"] = account.pop("enableNewsletter")
-
-    if account.get("isAWWAdmin"):
-        account["is_aww_admin"] = account.pop("isAWWAdmin")
+    change_keyname_socialnetwork("google")
+    change_keyname_socialnetwork("facebook")
+    change_keyname_socialnetwork("twitter")
 
     accounts_list.append(account)
 
-print(accounts_list[0])
-
+print(accounts_list[1015])
 
 
 for value in accounts_list:
