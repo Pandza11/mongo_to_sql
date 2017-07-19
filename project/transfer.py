@@ -12,6 +12,16 @@ def change_keyname(oldkey, newkey, collection):
         pass
 
 
+def change_keyname_typo(oldkey, newkey):
+    """
+    Renames dictionary key of a collection when typo
+    """
+    try:
+        account[newkey] = account.pop(oldkey)
+    except KeyError:
+        pass
+
+
 def change_keyname_socialnetwork(socialnetwork):
     """
     Renames dictionary key embedded within another dictionary (the collection)
@@ -33,49 +43,9 @@ db = client.awwapp
 accounts_list = []
 subscriptions_list = []
 
-
 for account in db.accounts.find():
     for item in account["subscriptions"]:
         subscriptions_list.append(item)
-    deletion_list = ["_id", "__v", "password", "isCommboxAdmin",
-                     "lastModified", "googleId", "facebookId", "twitterId",
-                     "subscriptions"]
-    for item in deletion_list:
-        account.pop(item, None)
-
-    change_keyname_list = [["accountType", "account_type"],
-                           ["enableClassroom", "enable_classroom"],
-                           ["refSrc", "ref_src"],
-                           ["firstSeen", "firstSeen"],
-                           ["isAffiliate", "is_affiliate"],
-                           ["deletedAt", "deleted_at"],
-                           ["memberOf", "member_of"],
-                           ["defaultTTL", "default_ttl"],
-                           ["lastLoginAt", "last_login_at"],
-                           ["isAWWAdmin", "is_aww_admin"],
-                           ["createdAt", "created_at"],
-                           ["enableNewsletter", "enable_newsletter"]]
-    for item in change_keyname_list:
-        change_keyname(item[0], item[1], account)
-
-    change_keyname_socialnetwork_list = ["google", "facebook", "twitter"]
-    for item in change_keyname_socialnetwork_list:
-        change_keyname_socialnetwork(item)
-
-    accounts_list.append(account)
-
-for value in accounts_list:
-    conn = sqlite3.connect(db_path_sqlite)
-    cursor = conn.cursor()
-    columns = ', '.join(value.keys())
-    placeholders = ', '.join('?' * len(value))
-    sql = 'INSERT INTO etl_account ({}) VALUES ({})'.format(
-        columns, placeholders)
-    cursor.execute(sql, tuple(value.values()))
-
-    conn.commit()
-    conn.close()
-
 
 for subscription in subscriptions_list:
     if len(subscription) > 0:
@@ -107,11 +77,62 @@ for subscription in subscriptions_list:
 
 
 for value in subscriptions_list:
+
+    conn = sqlite3.connect(db_path_sqlite)
+    cursor = conn.cursor()
+
+    columns = ', '.join(value.keys())
+    placeholders = ', '.join('?' * len(value))
+
+    sql = 'INSERT INTO etl_subscription ({}) VALUES ({})'.format(
+        columns, placeholders)
+    cursor.execute(sql, tuple(value.values()))
+
+    conn.commit()
+    conn.close()
+
+
+for account in db.accounts.find():
+    change_keyname_typo("subcriprions", "subscriptions")
+    change_keyname_typo("subcriptions", "subcriptions")
+
+    deletion_list = ["_id", "__v", "password", "isCommboxAdmin",
+                     "lastModified", "googleId", "facebookId", "twitterId",
+                     "subscriptions", "subcriptions", "subcriprions"]
+    for item in deletion_list:
+        account.pop(item, None)
+
+    change_keyname_list = [["accountType", "account_type"],
+                           ["enableClassroom", "enable_classroom"],
+                           ["refSrc", "ref_src"],
+                           ["firstSeen", "firstSeen"],
+                           ["isAffiliate", "is_affiliate"],
+                           ["deletedAt", "deleted_at"],
+                           ["memberOf", "member_of"],
+                           ["defaultTTL", "default_ttl"],
+                           ["lastLoginAt", "last_login_at"],
+                           ["isAWWAdmin", "is_aww_admin"],
+                           ["createdAt", "created_at"],
+                           ["enableNewsletter", "enable_newsletter"]]
+    for item in change_keyname_list:
+        change_keyname(item[0], item[1], account)
+
+    change_keyname_socialnetwork_list = ["google", "facebook", "twitter"]
+    for item in change_keyname_socialnetwork_list:
+        change_keyname_socialnetwork(item)
+
+    accounts_list.append(account)
+
+
+for value in accounts_list:
+
     conn = sqlite3.connect(db_path_sqlite)
     cursor = conn.cursor()
     columns = ', '.join(value.keys())
+
     placeholders = ', '.join('?' * len(value))
-    sql = 'INSERT INTO etl_subscription ({}) VALUES ({})'.format(
+
+    sql = 'INSERT INTO etl_account ({}) VALUES ({})'.format(
         columns, placeholders)
     cursor.execute(sql, tuple(value.values()))
 
