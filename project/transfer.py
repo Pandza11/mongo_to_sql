@@ -24,6 +24,7 @@ def change_keyname_socialnetwork(socialnetwork):
                     socialnetwork+"Profile").pop(item)
     account.pop(socialnetwork+"Profile", None)
 
+
 db_path_sqlite = '/home/ivan/projects/project-aww/aww-etl/project/db.sqlite3'
 
 client = pymongo.MongoClient("localhost", 27017)
@@ -73,7 +74,7 @@ for value in accounts_list:
     cursor.execute(sql, tuple(value.values()))
 
     conn.commit()
-conn.close()
+    conn.close()
 
 
 for subscription in subscriptions_list:
@@ -115,4 +116,4 @@ for value in subscriptions_list:
     cursor.execute(sql, tuple(value.values()))
 
     conn.commit()
-conn.close()
+    conn.close()
