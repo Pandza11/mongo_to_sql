@@ -72,7 +72,7 @@ for value in accounts_list:
         columns, placeholders)
     cursor.execute(sql, tuple(value.values()))
 
-conn.commit()
+    conn.commit()
 conn.close()
 
 
@@ -114,5 +114,5 @@ for value in subscriptions_list:
         columns, placeholders)
     cursor.execute(sql, tuple(value.values()))
 
-conn.commit()
+    conn.commit()
 conn.close()

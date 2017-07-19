@@ -2,13 +2,12 @@ import pymongo
 import sqlite3
 
 
-def change_keyname(oldkey, newkey):
+def change_keyname(oldkey, newkey, collection):
     """
-    Renames dictionary key
+    Renames dictionary key of a collection
     """
-
     try:
-        subscription[newkey] = subscription.pop(oldkey)
+        collection[newkey] = collection.pop(oldkey)
     except KeyError:
         pass
 
@@ -25,14 +24,17 @@ for subscription in subscriptions_list:
     if len(subscription) > 0:
         subscription.pop("_id", None)
 
-        change_keyname("memberLimit", "member_limit")
-        change_keyname("isSuspended", "is_suspended")
-        change_keyname("paypalAgreementId", "paypal_agreement_id")
-        change_keyname("lastPayment", "last_payment")
-        change_keyname("createdAt", "created_at")
-        change_keyname("couponId", "coupon_id")
-        change_keyname("plan", "plan")
-        change_keyname("period", "period")
+        change_keyname_list = [["memberLimit", "member_limit"],
+                               ["isSuspended", "is_suspended"],
+                               ["paypalAgreementId", "paypal_agreement_id"],
+                               ["lastPayment", "last_payment"],
+                               ["createdAt", "created_at"],
+                               ["couponId", "coupon_id"],
+                               ["plan", "plan"],
+                               ["period", "period"]]
+
+        for item in change_keyname_list:
+            change_keyname(item[0], item[1], subscription)
 
         try:
             hosts_list = subscription["hosts"]
