@@ -25,7 +25,7 @@ def change_keyname_socialnetwork(socialnetwork):
     account.pop(socialnetwork+"Profile", None)
 
 
-db_path_sqlite = '/home/ivan/projects/project-aww/aww-etl/project/db.sqlite3'
+db_path_sqlite = '/home/dobar-kod/pandzic/project-aww/aww-etl/project/db.sqlite3'
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
