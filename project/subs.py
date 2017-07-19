@@ -6,6 +6,7 @@ def change_keyname(oldkey, newkey):
     """
     Renames dictionary key
     """
+
     try:
         subscription[newkey] = subscription.pop(oldkey)
     except KeyError:
@@ -29,17 +30,9 @@ for subscription in subscriptions_list:
         change_keyname("paypalAgreementId", "paypal_agreement_id")
         change_keyname("lastPayment", "last_payment")
         change_keyname("createdAt", "created_at")
-
-        if subscription.get("couponId"):
-            subscription["coupon_id"] = subscription.pop("couponId")
-            subscription["coupon_id"] = subscription["coupon_id"].encode(
-                "utf-8")
-
-        if subscription.get("plan"):
-            subscription["plan"] = subscription["plan"].encode("utf-8")
-
-        if subscription.get("period"):
-            subscription["period"] = subscription["period"].encode("utf-8")
+        change_keyname("couponId", "coupon_id")
+        change_keyname("plan", "plan")
+        change_keyname("period", "period")
 
         try:
             hosts_list = subscription["hosts"]

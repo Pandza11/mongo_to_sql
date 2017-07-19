@@ -2,19 +2,19 @@ import pymongo
 import sqlite3
 
 
-def change_keyname(oldkey, newkey):
+def change_keyname(oldkey, newkey, collection):
     """
-    Renames dictionary key
+    Renames dictionary key of a collection
     """
     try:
-        account[newkey] = account.pop(oldkey)
+        collection[newkey] = collection.pop(oldkey)
     except KeyError:
         pass
 
 
 def change_keyname_socialnetwork(socialnetwork):
     """
-    Renames dictionary key embedded within another dictionary
+    Renames dictionary key embedded within another dictionary (the collection)
     """
     social_list = ["id", "username", "displayName"]
     if account.get(socialnetwork+"Profile"):
@@ -23,6 +23,8 @@ def change_keyname_socialnetwork(socialnetwork):
                 account[socialnetwork+"_profile_"+item.lower()] = account.get(
                     socialnetwork+"Profile").pop(item)
     account.pop(socialnetwork+"Profile", None)
+
+db_path_sqlite = '/home/ivan/projects/project-aww/aww-etl/project/db.sqlite3'
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
@@ -34,9 +36,9 @@ subscriptions_list = []
 for account in db.accounts.find():
     for item in account["subscriptions"]:
         subscriptions_list.append(item)
-
-    deletion_list = ["_id", "__v", "password", "isCommboxAdmin", "googleId",
-                     "facebookId", "twitterId", "subscriptions"]
+    deletion_list = ["_id", "__v", "password", "isCommboxAdmin",
+                     "lastModified", "googleId", "facebookId", "twitterId",
+                     "subscriptions"]
     for item in deletion_list:
         account.pop(item, None)
 
@@ -53,7 +55,7 @@ for account in db.accounts.find():
                            ["createdAt", "created_at"],
                            ["enableNewsletter", "enable_newsletter"]]
     for item in change_keyname_list:
-        change_keyname(item[0], item[1])
+        change_keyname(item[0], item[1], account)
 
     change_keyname_socialnetwork_list = ["google", "facebook", "twitter"]
     for item in change_keyname_socialnetwork_list:
@@ -62,16 +64,16 @@ for account in db.accounts.find():
     accounts_list.append(account)
 
 for value in accounts_list:
-    conn = sqlite3.connect(
-        '/home/ivan/projects/project-aww/aww-etl/project/db.sqlite3')
+    conn = sqlite3.connect(db_path_sqlite)
     cursor = conn.cursor()
     columns = ', '.join(value.keys())
     placeholders = ', '.join('?' * len(value))
     sql = 'INSERT INTO etl_account ({}) VALUES ({})'.format(
         columns, placeholders)
     cursor.execute(sql, tuple(value.values()))
-    conn.commit()
-    conn.close()
+
+conn.commit()
+conn.close()
 
 
 for subscription in subscriptions_list:
@@ -88,7 +90,7 @@ for subscription in subscriptions_list:
                                ["period", "period"]]
 
         for item in change_keyname_list:
-            change_keyname(item[0], item[1])
+            change_keyname(item[0], item[1], subscription)
 
         try:
             hosts_list = subscription["hosts"]
@@ -102,14 +104,15 @@ for subscription in subscriptions_list:
         except KeyError:
             pass
 
+
 for value in subscriptions_list:
-    conn = sqlite3.connect(
-        '/home/ivan/projects/project-aww/aww-etl/project/db.sqlite3')
+    conn = sqlite3.connect(db_path_sqlite)
     cursor = conn.cursor()
     columns = ', '.join(value.keys())
     placeholders = ', '.join('?' * len(value))
     sql = 'INSERT INTO etl_subscription ({}) VALUES ({})'.format(
         columns, placeholders)
     cursor.execute(sql, tuple(value.values()))
-    conn.commit()
-    conn.close()
+
+conn.commit()
+conn.close()
