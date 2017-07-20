@@ -55,11 +55,25 @@ for subscription in subscriptions_list:
         except KeyError:
             pass
 
-print subscriptions_list[0].keys()
+missing_keys = ["last_payment", "is_suspended", "hosts",
+                "member_limit", "period", "coupon_id"]
+
+for key in missing_keys:
+    for item in subscriptions_list:
+        try:
+            value = item[key]
+        except KeyError:
+            item[key] = None
+
 
 for item in subscriptions_list:
-    subscription_obj = Subscription(plan=item["plan"])
-    subscription_obj.save()
+    sub = Subscription(plan=item["plan"], created_at=item["created_at"],
+                       paypal_agreement_id=item["paypal_agreement_id"],
+                       last_payment=item["last_payment"],
+                       is_suspended=item["is_suspended"],
+                       hosts=item["hosts"], member_limit=item["member_limit"],
+                       period=item["period"], coupon_id=item["coupon_id"])
+    sub.save()
 
 
 #print(Subscription.objects.all())
