@@ -8,16 +8,6 @@ django.setup()
 from etl.models import Subscription
 
 
-def change_keyname(oldkey, newkey, collection):
-    """
-    Renames dictionary key of a collection
-    """
-    try:
-        collection[newkey] = collection.pop(oldkey)
-    except KeyError:
-        pass
-
-
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
 
@@ -37,9 +27,8 @@ for key in missing_keys:
         except KeyError:
             item[key] = None
 
-
+'''
 for item in subscriptions_list:
-    #item.pop("_id", None)
     sub = Subscription(plan=item["plan"], created_at=item["createdAt"],
                        paypal_agreement_id=item["paypalAgreementId"],
                        last_payment=item["lastPayment"],
@@ -47,3 +36,4 @@ for item in subscriptions_list:
                        hosts=item["hosts"], member_limit=item["memberLimit"],
                        period=item["period"], coupon_id=item["couponId"])
     sub.save()
+'''

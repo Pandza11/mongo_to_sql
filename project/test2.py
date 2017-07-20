@@ -10,11 +10,12 @@ from etl.models import Account
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
 
-accounts_list = []
+account_list = []
 
-def change_keyname_typo(oldkey, newkey):
+
+def correct_typo(oldkey, newkey):
     """
-    Renames dictionary key of a collection when typo
+    Renames dictionary key in order to correct typo
     """
     try:
         account[newkey] = account.pop(oldkey)
@@ -22,28 +23,30 @@ def change_keyname_typo(oldkey, newkey):
         pass
 
 
-def change_keyname_socialnetwork(socialnetwork):
+def create_social_kv_pairs(socialnetwork):
     """
-    Renames dictionary key embedded within another dictionary (the collection)
+    Creates three key value pairs out of social network items
+    embedded in a dictionary within the db.accounts collection/dictionary.
     """
     social_list = ["id", "username", "displayName"]
-    if account.get(socialnetwork+"Profile"):
-        for item in social_list:
-            if account.get(socialnetwork+"Profile").get(item):
-                account[socialnetwork+"_profile_"+item.lower()] = account.get(
-                    socialnetwork+"Profile").pop(item)
-    account.pop(socialnetwork+"Profile", None)
+
+    for item in social_list:
+        try:
+            account[socialnetwork+"_profile_"+item.lower()] = account[
+                socialnetwork+"Profile"][item]
+        except KeyError:
+            pass
 
 
 for account in db.accounts.find():
-    change_keyname_typo("subcriprions", "subscriptions")
-    change_keyname_typo("subcriptions", "subcriptions")
+    correct_typo("subcriprions", "subscriptions")
+    correct_typo("subcriptions", "subcriptions")
 
     social_networks = ["google", "facebook", "twitter"]
     for item in social_networks:
-        change_keyname_socialnetwork(item)
+        create_social_kv_pairs(item)
 
-    accounts_list.append(account)
+    account_list.append(account)
 
 missing_key_accounts = [
     "name", "key", "date", "referral", "email", "accountType",
@@ -56,29 +59,33 @@ missing_key_accounts = [
     "twitter_profile_username", "twitter_profile_displayname"]
 
 for key in missing_key_accounts:
-    for item in accounts_list:
+    for account in account_list:
         try:
-            value = item[key]
+            value = account[key]
         except KeyError:
-            item[key] = None
+            account[key] = None
 
-for item in accounts_list:
-    account = Account(
-        email=item["email"], created_at=item["createdAt"],
-        name=item["name"], key=item["key"], date=item["date"],
-        default_ttl=item["defaultTTL"], google_profile_id=item["google_profile_id"],
-        google_profile_username=item["google_profile_username"],
-        google_profile_displayname=item["google_profile_displayname"],
-        facebook_profile_id=item["facebook_profile_id"],
-        facebook_profile_username=item["facebook_profile_username"],
-        facebook_profile_displayname=item["facebook_profile_displayname"],
-        twitter_profile_id=item["twitter_profile_id"],
-        twitter_profile_username=item["twitter_profile_username"],
-        twitter_profile_displayname=item["twitter_profile_displayname"],
-        referral=item["referral"], ref_src=item["refSrc"], first_seen=item["firstSeen"],
-        enable_classroom=item["enableClassroom"], member_of=item["memberOf"],
-        is_affiliate=item["isAffiliate"], is_aww_admin=item["isAWWAdmin"],
-        account_type=item["accountType"],
-        enable_newsletter=item["enableNewsletter"],
-        last_login_at=item["lastLoginAt"])
-    account.save()
+for account in account_list:
+    account_object = Account(
+        email=account["email"], created_at=account["createdAt"],
+        name=account["name"], key=account["key"], date=account["date"],
+        default_ttl=account["defaultTTL"],
+        google_profile_id=account["google_profile_id"],
+        google_profile_username=account["google_profile_username"],
+        google_profile_displayname=account["google_profile_displayname"],
+        facebook_profile_id=account["facebook_profile_id"],
+        facebook_profile_username=account["facebook_profile_username"],
+        facebook_profile_displayname=account["facebook_profile_displayname"],
+        twitter_profile_id=account["twitter_profile_id"],
+        twitter_profile_username=account["twitter_profile_username"],
+        twitter_profile_displayname=account["twitter_profile_displayname"],
+        referral=account["referral"], ref_src=account["refSrc"],
+        first_seen=account["firstSeen"],
+        enable_classroom=account["enableClassroom"],
+        member_of=account["memberOf"],
+        is_affiliate=account["isAffiliate"],
+        is_aww_admin=account["isAWWAdmin"],
+        account_type=account["accountType"],
+        enable_newsletter=account["enableNewsletter"],
+        last_login_at=account["lastLoginAt"])
+    account_object.save()
