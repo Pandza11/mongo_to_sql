@@ -15,14 +15,14 @@ account_list, subscriptions_list = [], []
 
 def create_social_kv_pairs(socialnetwork):
     """
-    Creates three key value pairs out of social network items
+    Creates three key value pairs out of social network components
     embedded in a dictionary within the db.accounts collection/dictionary.
     """
-    social_list = ["id", "username", "displayName"]
-    for item in social_list:
+    social_components = ["id", "username", "displayName"]
+    for component in social_components:
         try:
-            account[socialnetwork+"_profile_"+item.lower()] = account[
-                socialnetwork+"Profile"][item]
+            account[socialnetwork+"_profile_"+component.lower()] = account[
+                socialnetwork+"Profile"][component]
         except KeyError:
             pass
 
@@ -32,10 +32,22 @@ for account in db.accounts.find():
         subscriptions_list.append(sub)
 
     social_networks = ["google", "facebook", "twitter"]
-    for item in social_networks:
-        create_social_kv_pairs(item)
+    for network in social_networks:
+        create_social_kv_pairs(network)
 
     account_list.append(account)
+
+
+for subscription in subscriptions_list:
+    try:
+        hosts_list = filter(None, subscription["hosts"])
+        if len(hosts_list) == 1:
+            hosts_str = ''.join(hosts_list)
+        elif len(hosts_list) > 1:
+            hosts_str = ', '.join(hosts_list)
+        subscription["hosts"] = hosts_str
+    except KeyError:
+        pass
 
 missing_key_accounts = [
     "name", "key", "date", "referral", "email", "accountType",
@@ -60,12 +72,12 @@ for account_key in missing_key_accounts:
         except KeyError:
             account[account_key] = None
 
-for sub_key in missing_keys_subscriptions:
+for subscription_key in missing_keys_subscriptions:
     for subscription in subscriptions_list:
         try:
-            value = subscription[sub_key]
+            value = subscription[subscription_key]
         except KeyError:
-            subscription[sub_key] = None
+            subscription[subscription_key] = None
 
 
 for subscription in subscriptions_list:
