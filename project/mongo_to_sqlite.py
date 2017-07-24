@@ -45,7 +45,7 @@ for subscription in subscriptions_list:
     except KeyError:
         pass
 
-missing_key_accounts = [
+missing_keys_accounts = [
     "name", "key", "date", "referral", "email", "accountType",
     "enableClassroom", "refSrc", "firstSeen", "isAffiliate",
     "deletedAt", "memberOf", "defaultTTL", "lastLoginAt",
@@ -61,7 +61,7 @@ missing_keys_subscriptions = [
     "memberLimit", "period", "couponId"
     ]
 
-for account_key in missing_key_accounts:
+for account_key in missing_keys_accounts:
     for account in account_list:
         try:
             value = account[account_key]
