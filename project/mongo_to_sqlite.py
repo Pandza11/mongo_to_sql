@@ -9,7 +9,6 @@ from etl.models import Account, Subscription
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
-
 account_list, subscriptions_list = [], []
 
 
@@ -18,25 +17,22 @@ def create_social_kv_pairs(socialnetwork):
     Creates three key value pairs out of social network components
     embedded in a dictionary within the db.accounts collection/dictionary.
     """
-    social_components = ["id", "username", "displayName"]
-    for component in social_components:
+    social_componets = ["id", "username", "displayName"]
+    for component in social_componets:
         try:
             account[socialnetwork+"_profile_"+component.lower()] = account[
                 socialnetwork+"Profile"][component]
         except KeyError:
             pass
 
-
 for account in db.accounts.find():
-    for sub in account["subscriptions"]:
-        subscriptions_list.append(sub)
+    for subscription in account["subscriptions"]:
+        subscriptions_list.append(subscription)
 
     social_networks = ["google", "facebook", "twitter"]
     for network in social_networks:
         create_social_kv_pairs(network)
-
     account_list.append(account)
-
 
 for subscription in subscriptions_list:
     try:
@@ -79,7 +75,6 @@ for subscription_key in missing_keys_subscriptions:
         except KeyError:
             subscription[subscription_key] = None
 
-
 for subscription in subscriptions_list:
     subscription_object = Subscription(
         plan=subscription["plan"], created_at=subscription["createdAt"],
@@ -90,7 +85,6 @@ for subscription in subscriptions_list:
         period=subscription["period"], coupon_id=subscription["couponId"]
         )
     subscription_object.save()
-
 
 for account in account_list:
     account_object = Account(
@@ -109,8 +103,7 @@ for account in account_list:
         referral=account["referral"], ref_src=account["refSrc"],
         first_seen=account["firstSeen"],
         enable_classroom=account["enableClassroom"],
-        member_of=account["memberOf"],
-        is_affiliate=account["isAffiliate"],
+        member_of=account["memberOf"], is_affiliate=account["isAffiliate"],
         is_aww_admin=account["isAWWAdmin"],
         account_type=account["accountType"],
         enable_newsletter=account["enableNewsletter"],
