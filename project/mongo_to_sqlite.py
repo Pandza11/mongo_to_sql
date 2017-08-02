@@ -10,6 +10,7 @@ from etl.models import Account, Subscription
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
 account_list, subscriptions_list = [], []
+counter = 0
 
 
 def create_social_kv_pairs(socialnetwork):
@@ -27,7 +28,10 @@ def create_social_kv_pairs(socialnetwork):
 
 
 for account in db.accounts.find():
+    counter += 1
+    print counter
     for subscription in account["subscriptions"]:
+        subscription["account_id"] = counter
         subscriptions_list.append(subscription)
 
     social_networks = ["google", "facebook", "twitter"]
@@ -35,7 +39,7 @@ for account in db.accounts.find():
         create_social_kv_pairs(network)
     account_list.append(account)
 
-'''
+
 for subscription in subscriptions_list:
     try:
         hosts_list = filter(None, subscription["hosts"])
@@ -84,7 +88,8 @@ for subscription in subscriptions_list:
         last_payment=subscription["lastPayment"],
         is_suspended=subscription["isSuspended"],
         hosts=subscription["hosts"], member_limit=subscription["memberLimit"],
-        period=subscription["period"], coupon_id=subscription["couponId"]
+        period=subscription["period"], coupon_id=subscription["couponId"],
+        account_id=subscription["account_id"]
         )
     subscription_object.save()
 
@@ -112,4 +117,3 @@ for account in account_list:
         last_login_at=account["lastLoginAt"]
         )
     account_object.save()
-'''

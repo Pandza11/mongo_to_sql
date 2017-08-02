@@ -25,12 +25,14 @@ def create_social_kv_pairs(socialnetwork):
         except KeyError:
             pass
 
-
+counter = 0
 for account in db.accounts.find():
+    counter += 1
     for subscription in account["subscriptions"]:
-        print(subscription)
+        subscription["account_id"] = counter
         subscriptions_list.append(subscription)
 
+print subscriptions_list
 
 '''
     social_networks = ["google", "facebook", "twitter"]
