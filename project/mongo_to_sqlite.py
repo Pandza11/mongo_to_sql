@@ -25,6 +25,7 @@ def create_social_kv_pairs(socialnetwork):
         except KeyError:
             pass
 
+
 for account in db.accounts.find():
     for subscription in account["subscriptions"]:
         subscriptions_list.append(subscription)
@@ -34,6 +35,7 @@ for account in db.accounts.find():
         create_social_kv_pairs(network)
     account_list.append(account)
 
+'''
 for subscription in subscriptions_list:
     try:
         hosts_list = filter(None, subscription["hosts"])
@@ -110,3 +112,4 @@ for account in account_list:
         last_login_at=account["lastLoginAt"]
         )
     account_object.save()
+'''
