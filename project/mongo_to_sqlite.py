@@ -95,10 +95,8 @@ for subscription in subscriptions_list:
     subscription_object.save()
 
 
-except IntegrityError as e: 
-    if 'unique constraint' in e.message: # or e.args[0] from Django 1.10
-        #do something
-
+except IntegrityError as e:
+    if 'unique constraint' in e.message:
         for account in account_list:
             account_object = Account(
                 email=account["email"], created_at=account["createdAt"],
