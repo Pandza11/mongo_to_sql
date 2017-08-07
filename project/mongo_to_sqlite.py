@@ -1,6 +1,7 @@
 import os
 import django
 import pymongo
+from django.db import IntegrityError
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 django.setup()
@@ -28,10 +29,10 @@ def create_social_kv_pairs(socialnetwork):
 
 
 for account in db.accounts.find():
-    counter += 1
-    print counter
+    #counter += 1
+    #print counter
     for subscription in account["subscriptions"]:
-        subscription["account_id"] = counter
+        #subscription["account_id"] = counter
         subscriptions_list.append(subscription)
 
     social_networks = ["google", "facebook", "twitter"]
@@ -89,31 +90,36 @@ for subscription in subscriptions_list:
         is_suspended=subscription["isSuspended"],
         hosts=subscription["hosts"], member_limit=subscription["memberLimit"],
         period=subscription["period"], coupon_id=subscription["couponId"],
-        account_id=subscription["account_id"]
+        #account_id=subscription["account_id"]
         )
     subscription_object.save()
 
-for account in account_list:
-    account_object = Account(
-        email=account["email"], created_at=account["createdAt"],
-        name=account["name"], key=account["key"], date=account["date"],
-        default_ttl=account["defaultTTL"],
-        google_profile_id=account["google_profile_id"],
-        google_profile_username=account["google_profile_username"],
-        google_profile_displayname=account["google_profile_displayname"],
-        facebook_profile_id=account["facebook_profile_id"],
-        facebook_profile_username=account["facebook_profile_username"],
-        facebook_profile_displayname=account["facebook_profile_displayname"],
-        twitter_profile_id=account["twitter_profile_id"],
-        twitter_profile_username=account["twitter_profile_username"],
-        twitter_profile_displayname=account["twitter_profile_displayname"],
-        referral=account["referral"], ref_src=account["refSrc"],
-        first_seen=account["firstSeen"],
-        enable_classroom=account["enableClassroom"],
-        member_of=account["memberOf"], is_affiliate=account["isAffiliate"],
-        is_aww_admin=account["isAWWAdmin"],
-        account_type=account["accountType"],
-        enable_newsletter=account["enableNewsletter"],
-        last_login_at=account["lastLoginAt"]
-        )
-    account_object.save()
+
+except IntegrityError as e: 
+    if 'unique constraint' in e.message: # or e.args[0] from Django 1.10
+        #do something
+
+        for account in account_list:
+            account_object = Account(
+                email=account["email"], created_at=account["createdAt"],
+                name=account["name"], key=account["key"], date=account["date"],
+                default_ttl=account["defaultTTL"],
+                google_profile_id=account["google_profile_id"],
+                google_profile_username=account["google_profile_username"],
+                google_profile_displayname=account["google_profile_displayname"],
+                facebook_profile_id=account["facebook_profile_id"],
+                facebook_profile_username=account["facebook_profile_username"],
+                facebook_profile_displayname=account["facebook_profile_displayname"],
+                twitter_profile_id=account["twitter_profile_id"],
+                twitter_profile_username=account["twitter_profile_username"],
+                twitter_profile_displayname=account["twitter_profile_displayname"],
+                referral=account["referral"], ref_src=account["refSrc"],
+                first_seen=account["firstSeen"],
+                enable_classroom=account["enableClassroom"],
+                member_of=account["memberOf"], is_affiliate=account["isAffiliate"],
+                is_aww_admin=account["isAWWAdmin"],
+                account_type=account["accountType"],
+                enable_newsletter=account["enableNewsletter"],
+                last_login_at=account["lastLoginAt"]
+                )
+            account_object.save()
