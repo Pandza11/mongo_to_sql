@@ -28,10 +28,8 @@ def create_social_kv_pairs(socialnetwork):
 
 
 for account in db.accounts.find():
-    counter += 1
-    print counter
     for subscription in account["subscriptions"]:
-        subscription["account_id"] = counter
+        subscription["email"] = account["email"]
         subscriptions_list.append(subscription)
 
     social_networks = ["google", "facebook", "twitter"]
@@ -81,18 +79,6 @@ for subscription_key in missing_keys_subscriptions:
         except KeyError:
             subscription[subscription_key] = None
 
-for subscription in subscriptions_list:
-    subscription_object = Subscription(
-        plan=subscription["plan"], created_at=subscription["createdAt"],
-        paypal_agreement_id=subscription["paypalAgreementId"],
-        last_payment=subscription["lastPayment"],
-        is_suspended=subscription["isSuspended"],
-        hosts=subscription["hosts"], member_limit=subscription["memberLimit"],
-        period=subscription["period"], coupon_id=subscription["couponId"],
-        account_id=subscription["account_id"]
-        )
-    subscription_object.save()
-
 for account in account_list:
     account_object = Account(
         email=account["email"], created_at=account["createdAt"],
@@ -117,3 +103,16 @@ for account in account_list:
         last_login_at=account["lastLoginAt"]
         )
     account_object.save()
+
+
+for subscription in subscriptions_list:
+    subscription_object = Subscription(
+        plan=subscription["plan"], created_at=subscription["createdAt"],
+        paypal_agreement_id=subscription["paypalAgreementId"],
+        last_payment=subscription["lastPayment"],
+        is_suspended=subscription["isSuspended"],
+        hosts=subscription["hosts"], member_limit=subscription["memberLimit"],
+        period=subscription["period"], coupon_id=subscription["couponId"],
+        email=subscription["email"]
+        )
+    subscription_object.save()
