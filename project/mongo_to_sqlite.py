@@ -106,6 +106,7 @@ for account in account_list:
 
 
 for subscription in subscriptions_list:
+    account = Account.objects.get(email=subscription["email"])
     subscription_object = Subscription(
         plan=subscription["plan"], created_at=subscription["createdAt"],
         paypal_agreement_id=subscription["paypalAgreementId"],
@@ -113,6 +114,6 @@ for subscription in subscriptions_list:
         is_suspended=subscription["isSuspended"],
         hosts=subscription["hosts"], member_limit=subscription["memberLimit"],
         period=subscription["period"], coupon_id=subscription["couponId"],
-        email=subscription["email"]
+        account_id=account.id
         )
     subscription_object.save()
