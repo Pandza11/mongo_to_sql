@@ -37,9 +37,6 @@ class Account(models.Model):
     last_login_at = models.DateField(default=None, null=True, blank=True)
     deleted_at = models.DateField(default=None, null=True, blank=True)
 
-    def __str__(self):
-        return self.email
-
 
 class Subscription(models.Model):
     """
@@ -56,6 +53,3 @@ class Subscription(models.Model):
     coupon_id = models.CharField(max_length=1024, null=True, blank=False)
     account = models.ForeignKey(Account, default=None, null=True, blank=False)
     deleted_at = models.DateField(default=None, null=True, blank=False)
-
-    def __str__(self):
-        return str(self.account) + ' - ' + self.plan
