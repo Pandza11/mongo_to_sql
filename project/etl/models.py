@@ -52,5 +52,4 @@ class Subscription(models.Model):
     period = models.CharField(max_length=1024, default="monthly", null=True, blank=False)
     coupon_id = models.CharField(max_length=1024, null=True, blank=False)
     account = models.ForeignKey(Account, default=None, null=True, blank=False)
-    email = models.EmailField(max_length=254, blank=False)
     deleted_at = models.DateField(default=None, null=True, blank=False)

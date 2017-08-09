@@ -2,6 +2,8 @@ import os
 import django
 import pymongo
 
+from datetime import date
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 django.setup()
 
@@ -10,7 +12,9 @@ from etl.models import Account, Subscription
 client = pymongo.MongoClient("localhost", 27017)
 db = client.awwapp
 account_list, subscriptions_list = [], []
-counter = 0
+old_accounts_emails, new_accounts_emails = [], []
+now = date.today()
+date_today = now.strftime("%Y-%m-%d")
 
 
 def create_social_kv_pairs(socialnetwork):
@@ -28,14 +32,34 @@ def create_social_kv_pairs(socialnetwork):
 
 
 for account in db.accounts.find():
-    for subscription in account["subscriptions"]:
-        subscription["email"] = account["email"]
-        subscriptions_list.append(subscription)
+    new_accounts_emails.append(account["email"])
+    try:
+        account_obj = Account.objects.get(email=account["email"])
+    except Account.DoesNotExist:
+        for subscription in account["subscriptions"]:
+            subscription["email"] = account["email"]
+            subscriptions_list.append(subscription)
 
-    social_networks = ["google", "facebook", "twitter"]
-    for network in social_networks:
-        create_social_kv_pairs(network)
-    account_list.append(account)
+        social_networks = ["google", "facebook", "twitter"]
+        for network in social_networks:
+            create_social_kv_pairs(network)
+        account_list.append(account)
+
+
+for account in Account.objects.all():
+    old_accounts_emails.append(account.email)
+
+del new_accounts_emails[-50:]
+
+for email in old_accounts_emails:
+    if email not in new_accounts_emails:
+        account_obj = Account.objects.get(email=email)
+        account_obj.deleted_at = date_today
+        account_obj.save()
+        deleted_subs = Subscription.objects.filter(account_id=account.id)
+        for subscription_obj in deleted_subs:
+            subscription_obj.deleted_at = date_today
+            subscription_obj.save()
 
 
 for subscription in subscriptions_list:
