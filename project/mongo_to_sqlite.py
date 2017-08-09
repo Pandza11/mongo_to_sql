@@ -49,14 +49,14 @@ for account in db.accounts.find():
 for account in Account.objects.all():
     old_accounts_emails.append(account.email)
 
-del new_accounts_emails[-50:]
+del new_accounts_emails[-20:]
 
 for email in old_accounts_emails:
     if email not in new_accounts_emails:
         account_obj = Account.objects.get(email=email)
         account_obj.deleted_at = date_today
         account_obj.save()
-        deleted_subs = Subscription.objects.filter(account_id=account.id)
+        deleted_subs = Subscription.objects.filter(account_id=account_obj.id)
         for subscription_obj in deleted_subs:
             subscription_obj.deleted_at = date_today
             subscription_obj.save()
