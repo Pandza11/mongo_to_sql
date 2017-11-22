@@ -1,7 +1,3 @@
-# An ETL script for AWW
-
-This is an ETL script for A Web Whiteboard by GoodCode.
-
 ### Quickstart
 
 Get the source from GitHub:
